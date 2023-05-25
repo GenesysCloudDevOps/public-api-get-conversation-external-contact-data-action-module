@@ -1,0 +1,49 @@
+{
+  "name": "Get Conversation External Contact",
+  "integrationType": "purecloud-data-actions",
+  "actionType": "custom",
+  "config": {
+    "request": {
+      "requestUrlTemplate": "/api/v2/conversations/${input.conversationId}",
+      "requestType": "GET",
+      "headers": {},
+      "requestTemplate": "${input.rawRequest}"
+    },
+    "response": {
+      "translationMap": {
+        "externalContactId": "$.participants[?(@.purpose=='customer' || @.purpose=='external')].externalContactId",
+        "communicationId": "$.participants[?(@.purpose=='customer' || @.purpose=='external')].calls[0].id"
+      },
+      "translationMapDefaults": {},
+      "successTemplate": "{ \"externalContactId\": ${successTemplateUtils.firstFromArray(\"${externalContactId}\", \"$esc.quote$esc.quote\")}, \"communicationId\": ${successTemplateUtils.firstFromArray(\"${communicationId}\", \"$esc.quote$esc.quote\")} }"
+    }
+  },
+  "contract": {
+    "input": {
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "conversationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "output": {
+      "successSchema": {
+        "type": "object",
+        "properties": {
+          "externalContactId": {
+            "type": "string"
+          },
+          "communicationId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "secure": false
+}
